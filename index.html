@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <title>Websocket test</title>
+    </head>
+    <body>
+
+        <input type="text" id="inputText" />
+        <button id="sendButton">Send</button> <br>
+        <textarea id="content" disabled="true">
+        </textarea>
+        <script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+        <script>
+            $(function() {
+                if (!window["WebSocket"]) {
+                    return;
+                }
+
+                var inputText = $('#inputText');
+                var sendButton  = $('#sendButton');
+                var content = $("#content");
+
+                var conn = new WebSocket('ws://localhost:12345/echo');
+
+                conn.onopen = function(e) {
+                    inputText.attr("disabled", false);
+                    sendButton.attr("disabled", false);
+                };
+
+                conn.onclose = function(e) {
+                    inputText.attr("disabled", true);
+                    sendButton.attr("disabled", true);
+                };
+
+                // Whenever we receive a message, update textarea
+                conn.onmessage = function(e) {
+                    console.log(e);
+                    content.val(e.data);
+                    inputText.val("");
+                };
+
+                $('#sendButton').click(function(){
+                    console.log(inputText.text());
+                    console.log(inputText.val());
+                    conn.send(inputText.val());
+                });
+            });
+        </script>
+    </body>
+</html>
