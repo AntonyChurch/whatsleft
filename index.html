@@ -8,6 +8,8 @@
         <button id="sendButton">Send</button> <br>
         <textarea id="content" disabled="true">
         </textarea>
+
+
         <script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
         <script>
             $(function() {
@@ -15,17 +17,21 @@
                     return;
                 }
 
+                //Setup the UI elements
                 var inputText = $('#inputText');
                 var sendButton  = $('#sendButton');
                 var content = $("#content");
 
+                //Create the Websocket
                 var conn = new WebSocket('ws://localhost:12345/echo');
 
+                //On the connection opening, enable the text input and the send button
                 conn.onopen = function(e) {
                     inputText.attr("disabled", false);
                     sendButton.attr("disabled", false);
                 };
 
+                //On the connection closing, disabled the text input and the send button
                 conn.onclose = function(e) {
                     inputText.attr("disabled", true);
                     sendButton.attr("disabled", true);
@@ -33,14 +39,12 @@
 
                 // Whenever we receive a message, update textarea
                 conn.onmessage = function(e) {
-                    console.log(e);
                     content.val(e.data);
                     inputText.val("");
                 };
 
-                $('#sendButton').click(function(){
-                    console.log(inputText.text());
-                    console.log(inputText.val());
+                //Send the data.
+                sendButton.click(function(){
                     conn.send(inputText.val());
                 });
             });
